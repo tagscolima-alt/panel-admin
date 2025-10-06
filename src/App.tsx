@@ -1,11 +1,17 @@
 // src/App.tsx
+import React from "react";
 import { AuthProvider } from "./context/AuthContext";
-import AppRouter from "./router/AppRouter"; // ✅ Importa desde tu carpeta "router"
+import AppRouter from "./router/AppRouter";
+import { ThemeProvider, CssBaseline } from "@mui/material";
+import theme from "./theme/theme"; // 👈 importa el tema
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppRouter />
-    </AuthProvider>
+    <ThemeProvider theme={theme}>
+      <CssBaseline /> {/* Normaliza colores y fondo */}
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

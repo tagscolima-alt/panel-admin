@@ -5,7 +5,6 @@ import axios from "axios";
  * 🌐 Configuración base de Axios
  * Esta instancia se usará en todos los servicios (auth, users, logs, etc.)
  */
-
 const api = axios.create({
   baseURL: "http://localhost:3000/api", // ✅ Ajusta si el backend cambia de puerto
   headers: {
@@ -38,4 +37,5 @@ api.interceptors.response.use(
   }
 );
 
+// 👇 ESTA LÍNEA ERA LA QUE FALTABA
 export default api;

@@ -1,4 +1,3 @@
-
 // src/services/authService.ts
 import api from "./api";
 
@@ -25,6 +24,7 @@ export const login = async (
   password: string
 ): Promise<LoginResponse> => {
   try {
+    // ⚙️ No repitas /api porque ya está en baseURL (http://localhost:3000/api)
     const response = await api.post<LoginResponse>("/auth/login", { email, password });
     const data = response.data;
 
@@ -48,11 +48,9 @@ export const login = async (
  */
 export const getPerfil = async () => {
   try {
-    const token = localStorage.getItem("token");
-    const response = await api.get("/auth/perfil", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return response.data;
+    const response = await api.get("/auth/perfil"); // ✅ no incluyas /api
+    // ⚙️ Tu backend devuelve { mensaje, usuario }
+    return response.data.usuario;
   } catch (error: any) {
     console.error("❌ Error al obtener perfil:", error.response?.data || error.message);
     throw new Error("No se pudo obtener el perfil del usuario.");
