@@ -1,13 +1,22 @@
+import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import Login from "../pages/Login";
+import { useAuth } from "../hooks/useAuth";
 import Dashboard from "../pages/Dashboard";
+import Usuarios from "../pages/Usuarios";
+import Logs from "../pages/Logs";
+import NotFound from "../pages/NotFound";
 import ProtectedRoute from "../components/ProtectedRoute";
+import Navbar from "../components/Navbar";
 
-export default function AppRouter() {
+const AppRouter: React.FC = () => {
+  const { user } = useAuth();
+
   return (
     <BrowserRouter>
+      {user && <Navbar />}
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Navigate to="/dashboard" />} />
+
         <Route
           path="/dashboard"
           element={
@@ -16,8 +25,29 @@ export default function AppRouter() {
             </ProtectedRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/" replace />} />
+
+        <Route
+          path="/usuarios"
+          element={
+            <ProtectedRoute roles={["admin"]}>
+              <Usuarios />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/logs"
+          element={
+            <ProtectedRoute roles={["admin"]}>
+              <Logs />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </BrowserRouter>
   );
-}
+};
+
+export default AppRouter;
