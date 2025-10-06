@@ -1,49 +1,61 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-
-interface User {
-  email: string;
-  rol: string;
-}
+// ✅ src/context/AuthContext.tsx
+import React, { createContext, useState, useEffect } from "react";
+import { getPerfil, login as apiLogin, logout as apiLogout } from "../services/authService";
 
 interface AuthContextType {
-  user: User | null;
-  loginUser: (usuario: User) => void;
-  logoutUser: () => void;
+  user: any;
   loading: boolean;
+  loginUser: (email: string, password: string) => Promise<void>;
+  logoutUser: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false); // 🚫 evita múltiples llamadas
 
-  // ✅ Mantener la sesión en localStorage
   useEffect(() => {
-    const savedUser = localStorage.getItem("user");
-    if (savedUser) setUser(JSON.parse(savedUser));
-    setLoading(false);
-  }, []);
+    if (initialized) return; // 👈 evita repetición
+    setInitialized(true);
 
-  const loginUser = (usuario: User) => {
-    setUser(usuario);
-    localStorage.setItem("user", JSON.stringify(usuario)); // guarda sesión
+    const fetchPerfil = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const perfil = await getPerfil();
+        setUser(perfil);
+      } catch {
+        // Si el token no es válido, lo eliminamos
+        localStorage.removeItem("token");
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPerfil();
+  }, [initialized]);
+
+  const loginUser = async (email: string, password: string) => {
+    const data = await apiLogin(email, password);
+    localStorage.setItem("token", data.token);
+    setUser(data.usuario);
   };
 
   const logoutUser = () => {
+    apiLogout();
     setUser(null);
-    localStorage.removeItem("user");
   };
 
   return (
-    <AuthContext.Provider value={{ user, loginUser, logoutUser, loading }}>
-      {children}
+    <AuthContext.Provider value={{ user, loading, loginUser, logoutUser }}>
+      {!loading && children}
     </AuthContext.Provider>
   );
-};
-
-export const useAuthContext = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuthContext debe usarse dentro de AuthProvider");
-  return context;
 };

@@ -1,18 +1,14 @@
-// src/App.tsx
 import React from "react";
-import { ThemeProvider, CssBaseline } from "@mui/material";
+import { BrowserRouter } from "react-router-dom";
+import AppRouter from "./routes/AppRouter";
 import { AuthProvider } from "./context/AuthContext";
-import AppRouter from "./router/AppRouter";
-import theme from "./theme/theme";
 
 export default function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <BrowserRouter>
       <AuthProvider>
         <AppRouter />
       </AuthProvider>
-    </ThemeProvider>
+    </BrowserRouter>
   );
 }
-
