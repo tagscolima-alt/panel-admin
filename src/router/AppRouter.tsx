@@ -1,53 +1,30 @@
+// src/router/AppRouter.tsx
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import Dashboard from "../pages/Dashboard";
-import Usuarios from "../pages/Usuarios";
-import Logs from "../pages/Logs";
-import NotFound from "../pages/NotFound";
-import ProtectedRoute from "../components/ProtectedRoute";
-import Navbar from "../components/Navbar";
+import Login from "../pages/Login";
 
-const AppRouter: React.FC = () => {
+function PrivateRoute({ children }: { children: JSX.Element }) {
   const { user } = useAuth();
+  return user ? children : <Navigate to="/login" />;
+}
 
+export default function AppRouter() {
   return (
-    <BrowserRouter>
-      {user && <Navbar />}
+    <Router>
       <Routes>
-        <Route path="/" element={<Navigate to="/dashboard" />} />
-
+        <Route path="/login" element={<Login />} />
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <PrivateRoute>
               <Dashboard />
-            </ProtectedRoute>
+            </PrivateRoute>
           }
         />
-
-        <Route
-          path="/usuarios"
-          element={
-            <ProtectedRoute roles={["admin"]}>
-              <Usuarios />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route
-          path="/logs"
-          element={
-            <ProtectedRoute roles={["admin"]}>
-              <Logs />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route path="*" element={<NotFound />} />
+        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
-    </BrowserRouter>
+    </Router>
   );
-};
-
-export default AppRouter;
+}

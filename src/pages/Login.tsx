@@ -1,38 +1,41 @@
-import { useState, useContext } from "react";
-import api from "../api/api";
-import { AuthContext } from "../context/AuthContext";
+// src/pages/Login.tsx
+import React from "react";
+import { useAuth } from "../hooks/useAuth";
 
-export default function LoginPage() {
-  const { setToken, setUser } = useContext(AuthContext);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+export default function Login() {
+  const { loginUser } = useAuth();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await api.post("/auth/login", { email, password });
-      setToken(res.data.token);
-      setUser(res.data.usuario);
-      setError("");
-    } catch {
-      setError("❌ Credenciales incorrectas");
-    }
+  const handleLogin = () => {
+    const usuario = { email: "juan@test.com", rol: "admin" };
+    loginUser(usuario);
   };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "100px" }}>
-      <h1>Login ERP-SAT</h1>
-      <form onSubmit={handleLogin}>
-        <input type="email" placeholder="Email" value={email}
-          onChange={(e) => setEmail(e.target.value)} required />
-        <br />
-        <input type="password" placeholder="Contraseña" value={password}
-          onChange={(e) => setPassword(e.target.value)} required />
-        <br />
-        <button type="submit">Iniciar sesión</button>
-      </form>
-      {error && <p style={{ color: "red" }}>{error}</p>}
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        height: "100vh",
+        background: "#f5f6fa",
+      }}
+    >
+      <h1>🔐 Iniciar sesión ERP-SAT</h1>
+      <p>Haz clic para entrar con un usuario de prueba.</p>
+      <button
+        style={{
+          padding: "10px 20px",
+          border: "none",
+          borderRadius: "5px",
+          background: "#1976d2",
+          color: "white",
+          cursor: "pointer",
+        }}
+        onClick={handleLogin}
+      >
+        Iniciar sesión
+      </button>
     </div>
   );
 }

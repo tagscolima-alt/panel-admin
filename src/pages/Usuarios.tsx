@@ -1,12 +1,11 @@
 import React from "react";
+import { Typography } from "@mui/material";
 
-const Usuarios: React.FC = () => {
+export default function Usuarios() {
   return (
-    <div style={{ padding: 20 }}>
-      <h2>👥 Administración de Usuarios</h2>
-      <p>Aquí podrás crear, editar o eliminar usuarios del sistema.</p>
+    <div>
+      <Typography variant="h4">👥 Gestión de Usuarios</Typography>
+      <Typography>En esta sección podrás administrar usuarios y roles.</Typography>
     </div>
   );
-};
-
-export default Usuarios;
+}

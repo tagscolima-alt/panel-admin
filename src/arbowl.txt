@@ -1,0 +1,55 @@
+Listado de rutas de carpetas para el volumen Windows-SSD
+El número de serie del volumen es CC16-1985
+C:.
+¦   App.css
+¦   App.tsx
+¦   arbol_src.txt
+¦   arbowl.txt
+¦   index.css
+¦   main.tsx
+¦   
++---api
+¦       api.ts
+¦       axios.ts
+¦       
++---assets
+¦       logo.png
+¦       react.svg
+¦       
++---components
+¦       Footer.tsx
+¦       Navbar.tsx
+¦       ProtectedRoute.tsx
+¦       Sidebar.tsx
+¦       
++---context
+¦       AuthContext.tsx
+¦       
++---hooks
+¦       useAuth.ts
+¦       
++---layouts
+¦       AdminLayout.tsx
+¦       
++---pages
+¦       Clientes.tsx
+¦       Configuracion.tsx
+¦       Dashboard.tsx
+¦       Facturas.tsx
+¦       LoginPage.tsx
+¦       Logs.tsx
+¦       NotFound.tsx
+¦       Productos.tsx
+¦       Roles.tsx
+¦       Usuarios.tsx
+¦       
++---router
+¦       AppRouter.tsx
+¦       
++---services
+¦       api.ts
+¦       authService.ts
+¦       
++---styles
+        global.css
+        
