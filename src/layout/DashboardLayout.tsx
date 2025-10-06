@@ -17,6 +17,7 @@ import {
   Toolbar,
   Typography,
   Button,
+  Avatar,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 import DescriptionIcon from "@mui/icons-material/Description";
@@ -24,90 +25,73 @@ import SettingsIcon from "@mui/icons-material/Settings";
 import PeopleIcon from "@mui/icons-material/People";
 import LogoutIcon from "@mui/icons-material/Logout";
 
-interface Props {
-  window?: () => Window;
-  children: React.ReactNode;
-}
-
 const drawerWidth = 240;
 
-export default function DashboardLayout(props: Props) {
-  const { window, children } = props;
-  const { user, logoutUser } = useAuth();
-  const [mobileOpen, setMobileOpen] = React.useState(false);
+export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, logoutUser } = useAuth(); // ✅ hook de autenticación
   const navigate = useNavigate();
+  const [mobileOpen, setMobileOpen] = React.useState(false);
 
-  const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen);
-  };
+  const handleDrawerToggle = () => setMobileOpen(!mobileOpen);
 
-  const handleNavigate = (path: string) => {
-    navigate(path);
-    setMobileOpen(false);
+  const menuItems = [
+    { text: "Facturas", icon: <DescriptionIcon color="primary" />, path: "/facturas" },
+    { text: "Configuración", icon: <SettingsIcon color="secondary" />, path: "/configuracion" },
+    { text: "Usuarios", icon: <PeopleIcon color="action" />, path: "/usuarios" },
+  ];
+
+  const handleLogout = () => {
+    if (logoutUser) logoutUser();
+    else {
+      localStorage.removeItem("token");
+      window.location.href = "/login";
+    }
   };
 
   const drawer = (
-    <div>
-      <Toolbar>
-        <Typography variant="h6" color="primary" fontWeight="bold">
+    <Box sx={{ textAlign: "center" }}>
+      <Toolbar sx={{ justifyContent: "center" }}>
+        <Typography variant="h6" fontWeight="bold" color="primary">
           ERP-SAT
         </Typography>
       </Toolbar>
       <Divider />
       <List>
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => handleNavigate("/facturas")}>
-            <ListItemIcon>
-              <DescriptionIcon color="primary" />
-            </ListItemIcon>
-            <ListItemText primary="Facturas" />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => handleNavigate("/configuracion")}>
-            <ListItemIcon>
-              <SettingsIcon color="secondary" />
-            </ListItemIcon>
-            <ListItemText primary="Configuración" />
-          </ListItemButton>
-        </ListItem>
-
-        <ListItem disablePadding>
-          <ListItemButton onClick={() => handleNavigate("/usuarios")}>
-            <ListItemIcon>
-              <PeopleIcon color="action" />
-            </ListItemIcon>
-            <ListItemText primary="Usuarios" />
-          </ListItemButton>
-        </ListItem>
+        {menuItems.map((item) => (
+          <ListItem key={item.text} disablePadding>
+            <ListItemButton onClick={() => navigate(item.path)}>
+              <ListItemIcon>{item.icon}</ListItemIcon>
+              <ListItemText primary={item.text} />
+            </ListItemButton>
+          </ListItem>
+        ))}
       </List>
-
       <Divider sx={{ my: 2 }} />
-      <Box textAlign="center" mb={2}>
-        <Button
-          variant="outlined"
-          color="error"
-          startIcon={<LogoutIcon />}
-          onClick={logoutUser}
-        >
-          Cerrar sesión
-        </Button>
-      </Box>
-    </div>
+      <Button
+        variant="outlined"
+        color="error"
+        startIcon={<LogoutIcon />}
+        onClick={handleLogout}
+        sx={{ mb: 2 }}
+      >
+        Cerrar sesión
+      </Button>
+    </Box>
   );
-
-  const container = window !== undefined ? () => window().document.body : undefined;
 
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
+
+      {/* 🔹 AppBar superior */}
       <AppBar
         position="fixed"
         sx={{
           width: { sm: `calc(100% - ${drawerWidth}px)` },
           ml: { sm: `${drawerWidth}px` },
           bgcolor: "primary.main",
+          color: "primary.contrastText",
+          boxShadow: 3,
         }}
       >
         <Toolbar>
@@ -120,23 +104,29 @@ export default function DashboardLayout(props: Props) {
           >
             <MenuIcon />
           </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
+
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
             Panel Administrativo
           </Typography>
-          <Typography variant="body2">
-            {user?.nombre || user?.email}
-          </Typography>
+
+          {/* 🔹 Avatar del usuario */}
+          <Box display="flex" alignItems="center" gap={1}>
+            <Avatar sx={{ width: 32, height: 32, bgcolor: "secondary.main" }}>
+              {user?.email?.[0]?.toUpperCase() || "U"}
+            </Avatar>
+            <Typography variant="body2">{user?.email || "Usuario"}</Typography>
+          </Box>
         </Toolbar>
       </AppBar>
 
+      {/* 🔹 Drawer lateral */}
       <Box
         component="nav"
         sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="mailbox folders"
+        aria-label="menu principal"
       >
-        {/* Drawer móvil */}
+        {/* Modo móvil */}
         <Drawer
-          container={container}
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
@@ -149,7 +139,7 @@ export default function DashboardLayout(props: Props) {
           {drawer}
         </Drawer>
 
-        {/* Drawer fijo */}
+        {/* Modo escritorio */}
         <Drawer
           variant="permanent"
           sx={{
@@ -162,7 +152,7 @@ export default function DashboardLayout(props: Props) {
         </Drawer>
       </Box>
 
-      {/* Contenido principal */}
+      {/* 🔹 Contenido principal */}
       <Box
         component="main"
         sx={{
@@ -173,7 +163,7 @@ export default function DashboardLayout(props: Props) {
           minHeight: "100vh",
         }}
       >
-        <Toolbar /> {/* Espacio bajo AppBar */}
+        <Toolbar />
         {children}
       </Box>
     </Box>

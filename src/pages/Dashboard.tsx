@@ -1,5 +1,4 @@
 // src/pages/Dashboard.tsx
-// src/pages/Dashboard.tsx
 import React, { useEffect, useState } from "react";
 import { getPerfil } from "../services/authService";
 import DashboardLayout from "../layout/DashboardLayout";
@@ -15,7 +14,7 @@ export default function Dashboard() {
         const data = await getPerfil();
         setPerfil(data);
       } catch (error) {
-        console.error("Error al cargar perfil", error);
+        console.error("Error al cargar perfil:", error);
       } finally {
         setLoading(false);
       }
@@ -25,23 +24,40 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 10 }}>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+      >
         <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!perfil) {
+    return (
+      <Box textAlign="center" mt={10}>
+        <Typography variant="h6" color="error">
+          ❌ No se pudo obtener el perfil del usuario.
+        </Typography>
       </Box>
     );
   }
 
   return (
     <DashboardLayout>
-      <Typography variant="h4" gutterBottom color="primary">
-        Bienvenido al ERP-SAT
-      </Typography>
-      <Typography variant="body1">
-        Usuario: <strong>{perfil?.email}</strong>
-      </Typography>
-      <Typography variant="body2" color="text.secondary">
-        Rol asignado: {perfil?.rol}
-      </Typography>
+      <Box textAlign="center" mt={10}>
+        <Typography variant="h4" fontWeight="bold" gutterBottom>
+          Panel Administrativo ERP-SAT
+        </Typography>
+        <Typography variant="h6">
+          Bienvenido <strong>{perfil.email}</strong>
+        </Typography>
+        <Typography color="text.secondary">
+          Rol asignado: <strong>{perfil.rol}</strong>
+        </Typography>
+      </Box>
     </DashboardLayout>
   );
 }
