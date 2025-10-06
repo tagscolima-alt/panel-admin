@@ -1,4 +1,3 @@
-// src/router/AppRouter.tsx
 import React from "react";
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
@@ -6,7 +5,8 @@ import Dashboard from "../pages/Dashboard";
 import Login from "../pages/Login";
 
 function PrivateRoute({ children }: { children: JSX.Element }) {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  if (loading) return <p>⏳ Verificando sesión...</p>;
   return user ? children : <Navigate to="/login" />;
 }
 
